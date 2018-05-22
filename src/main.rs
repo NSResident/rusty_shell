@@ -26,11 +26,11 @@ fn terminate_shell(){
 }
 
 fn execute_command(input : String){
-    let (jobs, pipecount) = parse_command(input);
+    let (jobs, pipecount) = parse_command(&input);
     //Add pipe support
     let (program, arguements) = &jobs[0]; 
     //println!("Program to run {}, arguements {:?}", &program, &arguements);
-    if program == "cd"{
+    if *program == "cd".to_owned(){
         if arguements.len() >= 1{
             match arguements[0].as_ref(){
                 "."     => (),
@@ -60,14 +60,14 @@ fn execute_command(input : String){
     }
 }
 
-fn parse_command(input:String) -> (Vec<(String, Vec<String>)>, usize){
-    let temp: Vec<String> = input.split(" | ").map(|s| s.to_string()).collect();
+fn parse_command(input:&String) -> (Vec<(&str, Vec<&str>)>, usize){
+    let temp: Vec<&str> = input.split(" | ").collect();
     let pipe_count = temp.len();
-    let mut jobs: Vec<(String, Vec<String>)> = Vec::new();
+    let mut jobs: Vec<(&str, Vec<&str>)> = Vec::new();
     for elements in temp{
-        let mut command_string: Vec<String> = elements.split(" ").map(|s| s.to_string()).collect();
-        let program = command_string.remove(0);
-        jobs.push((program.to_string(), command_string));
+        let mut command_string: Vec<&str> = elements.split(" ").collect();
+        let program: &str = command_string.remove(0);
+        jobs.push((program, command_string));
     }
     (jobs, pipe_count)
 }
